@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.2] - 2025-02-04
+### Fixed
+- Sound effect triggering during pulls
+- Path resolution for sound files
+- Key conversion in config validation
+- Tier-based sound effect selection
+
+### Added
+- Config file validation system:
+  - Required field checks
+  - Rate sum validation (100% total)
+  - Character count validation per tier
+  - Color format validation
+- Absolute path resolution for resources
+- Sound system diagnostics on startup
+- Async sound playback to prevent UI freeze
+
+### Changed
+- Config keys to string format for JSON compatibility
+- Sound playback to use absolute paths
+- Error handling for audio subsystem
+- Playsound dependency to v1.3.0
+
 ## [1.2.1] - 2025-02-03
 ### Fixed
 - Crystal persistence between sessions
