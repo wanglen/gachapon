@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.1] - 2025-02-03
+### Fixed
+- Crystal persistence between sessions
+- UI layout initialization errors
+- Missing button bindings for ads/minigame
+- Attribute errors in view component
+- Save file corruption edge cases
+- Model-view synchronization delays
+
+### Added
+- Emoji icons for ad/minigame buttons
+- Debug logging for state validation
+- Immediate save after critical actions
+- Save file integrity checks
+- Top-right crystal counter position
+- Force UI refresh after loading
+
+### Changed
+- Improved error handling flow
+- Unified UI update triggers
+- Enhanced save validation rules
+- Minigame reward to 50 crystals (unlimited)
+- Ad reward persistence mechanism
+
 ## [1.2.0] - 2025-02-03
 ### Added
 - Crystal currency system (100 per pull)
