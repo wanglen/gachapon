@@ -13,10 +13,12 @@ class GachaponView(ttk.Frame):
         master.resizable(False, False)  # Disable resizing
         self.style = ttk.Style()
         self.sprite_cache = {}
+        self.balance_label = None  # Add this line if not present
         self._configure_styles()
         self._create_widgets()
         self.create_sprite_templates()
         self._create_screenshot_button()
+        self.setup_ui()
 
     def _configure_styles(self):
         """Configure UI theme and colors"""
@@ -61,10 +63,13 @@ class GachaponView(ttk.Frame):
                 d.polygon([(18,32), (24,24), (30,32)], fill=accent_color)
             
             d.ellipse((2,2,45,45), outline=base_color, width=2)
-            for _ in range(3):
+            for _ in range(random.randint(3, 6)):
                 x = random.randint(5, 43)
                 y = random.randint(5, 43)
-                d.ellipse((x,y,x+2,y+2), fill='white')
+                size = random.choice([1, 2, 3])
+                d.ellipse((x,y,x+size,y+size), fill=random.choice(['white', accent_hex, '#ffffffaa']))
+            
+            d.text((4, 4), str(tier), fill=accent_color)
             
             self.sprite_cache[tier] = ImageTk.PhotoImage(img.resize((32,32)))
             
@@ -84,4 +89,30 @@ class GachaponView(ttk.Frame):
             text="📸 Take Screenshot"
             # Command will be set by controller
         )
-        self.screenshot_btn.pack(pady=5) 
+        self.screenshot_btn.pack(pady=5)
+
+    def setup_ui(self):
+        # Add sound toggle button
+        self.sound_btn = tk.Button(
+            self.master, 
+            text="🔊 Sound On",
+            font=("Arial", 10),
+            relief="flat"
+        )
+        self.sound_btn.pack(side=tk.BOTTOM, pady=5)
+
+        # Add/update balance display
+        self.balance_label = tk.Label(
+            self.master, 
+            text="Crystals: 1000",
+            font=("Arial", 12, "bold"),
+            fg="#2ecc71"
+        )
+        self.balance_label.pack(side=tk.TOP, pady=5)
+
+        # ... rest of existing UI code ... 
+
+    def update_balance_display(self):
+        """Update crystal balance display"""
+        balance = self.controller.model.crystal_balance
+        self.balance_label.config(text=f"Crystals: {balance}") 
