@@ -7,12 +7,17 @@ A Python-based gachapon game with a graphical interface featuring collectible ch
 ## Features
 
 - 🎮 Graphical user interface (GUI) using Tkinter
+- 💎 Crystal currency system (100 per pull)
 - 🌟 Three rarity tiers (3★, 4★, 5★) with different probabilities
 - 🛡️ Pity system guaranteeing 5★ after 50 unsuccessful pulls
-- 📦 Inventory tracking system
+- 📦 Inventory tracking system with tier-sorted display
 - 🎨 Custom generated sprites with tier-specific designs
-- 🔊 Sound feedback for rare pulls
-- 📊 Real-time pull statistics
+- 🔊 Sound feedback with toggle control
+- 📊 Real-time pull statistics and crystal balance
+- 🎯 Mini-game for earning extra crystals
+- 📺 Ad simulation system (300 crystals per view)
+- 🏆 Achievement system with crystal rewards
+- 📅 Daily login bonuses (200 crystals/day)
 
 ## Requirements
 
@@ -29,6 +34,8 @@ git clone https://github.com/yourusername/gachapon-simulator.git
 cd gachapon-simulator
 ```
 
+2. Install dependencies:
+
 ```bash
 pip install Pillow playsound PyObjC
 ```
@@ -41,14 +48,18 @@ python gachapon.py
 ```
 
 2. Interface controls:
-- **Pull Button**: Spend virtual currency for a random character
-- **Inventory Button**: View collected characters and counts
-- **Stats Display**: Shows total pulls and pity counter progress
+- **Pull Button**: Spend 100 crystals for a random character
+- **Inventory Button**: View collected characters sorted by tier
+- **Mini-Game Button**: Earn 50 crystals per click
+- **Ad Button**: Watch simulated ads for 300 crystals
+- **Sound Toggle**: Enable/disable sound effects
 
 3. Game mechanics:
 - Base rates: 3★ (70%), 4★ (25%), 5★ (5%)
-- Every 50 pulls without a 5★ guarantees a 5★ on next pull
-- Inventory automatically tracks all obtained characters
+- Pity system: Guaranteed 5★ after 50 unsuccessful pulls
+- Daily login bonus: 200 crystals awarded on first launch each day
+- Achievements: Earn bonus crystals for milestones
+- Character sprites: Randomly generated with tier-specific effects
 
 ## Credits
 

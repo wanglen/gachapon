@@ -1,6 +1,27 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [1.2.0] - 2025-01-04
+### Added
+- Crystal currency system (100 per pull)
+- Daily login bonus (200 crystals/day)
+- Achievements system with crystal rewards
+- Mini-game for earning extra crystals
+- Ad watching system (300 crystals/ad)
+- Balance display in main UI
+- Sound toggle functionality
+
+### Changed
+- Pull system requires crystals
+- Inventory sorting now considers tier first
+- Improved error handling for insufficient crystals
+- Enhanced achievement tracking display
+- Ad button disables during viewing
+
+### Fixed
+- Crystal balance display updates
+- Achievement triggering logic
+- Sound toggle persistence
+- Model-view synchronization issues
 
 ## [1.1.0] - 2025-01-03
 ### Added
