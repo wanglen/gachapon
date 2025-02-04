@@ -3,11 +3,17 @@ from playsound import playsound
 from core.model import GachaponModel
 from core.view import GachaponView
 import tkinter as tk
+from pathlib import Path
 
 class GachaponController:
     def __init__(self, root):
         self.root = root
         self.model = GachaponModel()
+        self.sound_enabled = True
+        self._sound_files = {
+            'pull': self._resolve_sound_path('sounds/pull.wav'),
+            'rare': self._resolve_sound_path('sounds/rare.wav')
+        }
         
         # Load before UI creation
         load_success = self.model.load_game()
@@ -29,6 +35,8 @@ class GachaponController:
             'pulls': self.model.total_pulls,
             'pity': self.model.pity_counter
         })
+        
+        self._verify_sound_system()
         
         root.protocol("WM_DELETE_WINDOW", self.on_exit)
 
@@ -73,15 +81,15 @@ class GachaponController:
     def handle_pull(self):
         try:
             result, tier = self.model.pull()
-            self.view._update_display(result, tier, self.model.total_pulls, self.model.pity_counter)
+            self._update_display(result, tier)
             self.update_balance_display()
             self.update_stats_display()
-            self.model.save_game()  # Force immediate save after pull
+            self.model.save_game()
         except ValueError as e:
             messagebox.showerror("Error", str(e))
         except Exception as e:
             messagebox.showerror("System Error", f"Pull failed: {str(e)}")
-            self.model.save_game()  # Save even on error
+            self.model.save_game()
 
     def handle_inventory(self):
         inventory_text = "=== INVENTORY ===\n" + "\n".join(
@@ -97,16 +105,23 @@ class GachaponController:
         self._play_sound_effects(tier)
 
     def _play_sound_effects(self, tier):
-        if tier == 5:
-            self.play_sound('sounds/rare.wav')
-        self.play_sound('sounds/pull.wav')
+        """Fixed path handling"""
+        sound_key = 'rare' if tier == 5 else 'pull'
+        self.play_sound(self._sound_files[sound_key])
 
     def play_sound(self, filename):
-        if self.sound_enabled:
-            try:
-                playsound(filename)
-            except Exception as e:
-                print(f"Error playing sound: {e}")
+        """More robust sound playback with fallbacks"""
+        if not self.sound_enabled or not filename:
+            return
+            
+        try:
+            from playsound import playsound
+            # Use synchronous playback for better compatibility
+            self.root.after(100, lambda: playsound(filename, block=True))
+        except Exception as e:
+            print(f"Final sound attempt failed: {e}")
+            self.sound_enabled = False
+            self.view.sound_btn.config(text="🔇 Sound Error")
 
     def take_screenshot(self):
         from utils.screenshot import take_game_screenshot
@@ -162,6 +177,7 @@ class GachaponController:
         self.view.pull_btn.config(command=self.handle_pull)
         self.view.inventory_btn.config(command=self.show_inventory)
         self.view.screenshot_btn.config(command=self.take_screenshot)
+        self.view.sound_btn.config(command=self.toggle_sound)
         
         # Add ad watch button binding
         if hasattr(self.view, 'ad_btn'):
@@ -186,3 +202,34 @@ class GachaponController:
     def update_all_displays(self):
         self.update_balance_display()
         self.update_stats_display() 
+
+    def _verify_sound_system(self):
+        """Check sound system readiness without playing test sound"""
+        try:
+            # Only validate file existence and imports
+            from playsound import playsound  # Verify import works
+            test_file = self._resolve_sound_path('sounds/pull.wav')
+            
+            # Don't actually play the sound, just verify path
+            if not Path(test_file).exists():
+                raise FileNotFoundError(f"Sound file missing: {test_file}")
+                
+        except Exception as e:
+            messagebox.showwarning(
+                "Sound System Error",
+                f"Sound system failed to initialize:\n{str(e)}\n"
+                "Sound effects will be disabled."
+            )
+            self.sound_enabled = False
+
+    def _resolve_sound_path(self, relative_path):
+        """Convert relative path to absolute path with better diagnostics"""
+        try:
+            base_dir = Path(__file__).parent.parent
+            full_path = base_dir / relative_path
+            if not full_path.exists():
+                raise FileNotFoundError(f"Sound file missing: {full_path}")
+            return str(full_path.resolve())  # Use absolute path
+        except Exception as e:
+            messagebox.showerror("Path Error", str(e))
+            return None 
