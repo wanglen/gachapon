@@ -18,6 +18,7 @@ A Python-based gachapon game with a graphical interface featuring collectible ch
 
 - Python 3.6+
 - Pillow (PIL Fork)
+- playsound (for audio playback)
 
 ## Installation
 
@@ -29,7 +30,7 @@ cd gachapon-simulator
 ```
 
 ```bash
-pip install Pillow
+pip install Pillow playsound PyObjC
 ```
 
 # How to Play
