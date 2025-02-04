@@ -6,19 +6,31 @@ import tkinter as tk
 
 class GachaponController:
     def __init__(self, root):
-        self.root = root  # Keep reference to root window
+        self.root = root
         self.model = GachaponModel()
-        self.view = GachaponView(root, controller=self)
-        self.view.pack(expand=True, fill='both')
-        self.view.pull_btn.config(command=self.handle_pull)
-        self.view.inventory_btn.config(command=self.handle_inventory)
-        self.view.screenshot_btn.config(command=self.take_screenshot)
-        self.view.sound_btn.config(command=self.toggle_sound)
-        self.sound_enabled = True
         
-        # Add new systems
-        self._setup_crystal_systems()
-        self._check_daily_login()
+        # Load before UI creation
+        load_success = self.model.load_game()
+        if not load_success:
+            messagebox.showinfo("New Game", "Starting new game!")
+            self.model.check_daily_login()
+            self.model.save_game()
+            
+        # Create and pack view
+        self.view = GachaponView(root, self)
+        self.view.pack(fill=tk.BOTH, expand=True)
+        
+        self._setup_bindings()
+        self.update_all_displays()
+        
+        # Debug: Print current state
+        print(f"[DEBUG] Loaded State:", {
+            'crystals': self.model.crystal_balance,
+            'pulls': self.model.total_pulls,
+            'pity': self.model.pity_counter
+        })
+        
+        root.protocol("WM_DELETE_WINDOW", self.on_exit)
 
     def _setup_crystal_systems(self):
         """Initialize all crystal acquisition UI elements"""
@@ -48,27 +60,28 @@ class GachaponController:
 
     def _check_daily_login(self):
         """Check for daily login bonus on startup"""
-        if self.model.check_daily_login():
+        login_result = self.model.check_daily_login()
+        if login_result:
             messagebox.showinfo("Daily Bonus", "🎉 Daily login bonus: +200 crystals!")
             self.update_balance_display()
+            self.model.save_game()
+        elif login_result is None:  # First time login
+            pass  # Already handled in model
+        else:
+            messagebox.showinfo("Welcome Back", "You already claimed today's bonus!")
 
     def handle_pull(self):
-        if not self.model.can_pull():
-            messagebox.showerror("Cannot Pull", "You need 100 crystals to pull!")
-            return
-        
         try:
             result, tier = self.model.pull()
-            self._update_display(result, tier)
+            self.view._update_display(result, tier, self.model.total_pulls, self.model.pity_counter)
             self.update_balance_display()
-            
-            new_achievements = self.model.check_achievements(result)
-            if new_achievements:
-                achievement_text = "🎉 New Achievements!\n" + "\n".join(new_achievements)
-                messagebox.showinfo("Achievements Unlocked", achievement_text)
-                self.update_balance_display()
+            self.update_stats_display()
+            self.model.save_game()  # Force immediate save after pull
         except ValueError as e:
             messagebox.showerror("Error", str(e))
+        except Exception as e:
+            messagebox.showerror("System Error", f"Pull failed: {str(e)}")
+            self.model.save_game()  # Save even on error
 
     def handle_inventory(self):
         inventory_text = "=== INVENTORY ===\n" + "\n".join(
@@ -106,16 +119,18 @@ class GachaponController:
         ) 
 
     def play_minigame(self):
-        """Simple clicker mini-game"""
+        """Handle minigame interaction - unlimited free crystals"""
         self.model.crystal_balance += 50
         self.update_balance_display()
-        messagebox.showinfo("Mini-Game", "🎯 Target Hit! +50 crystals!")
+        self.model.save_game()
+        self.view.show_message("Minigame Completed", "You earned 50 crystals!")
 
     def watch_ad(self):
-        """Simulated ad watching with 3 second delay"""
-        self.view.ad_btn.config(state=tk.DISABLED)
-        self.root.after(3000, self._grant_ad_reward)
-        messagebox.showinfo("Ad", "📺 Watching ad... (3 seconds)")
+        """Handle ad watching simulation"""
+        self.model.crystal_balance += 300
+        self.view.update_balance_display()
+        self.model.save_game()  # Add this line to force immediate save
+        self.view.show_message("Ad Watched", "+300 crystals!")
 
     def _grant_ad_reward(self):
         self.model.crystal_balance += 300
@@ -124,4 +139,50 @@ class GachaponController:
         messagebox.showinfo("Ad Complete", "✅ +300 crystals awarded!")
 
     def update_balance_display(self):
-        self.view.update_balance_display() 
+        self.view.update_balance_display()
+
+    def update_stats_display(self):
+        """Force update pull counters"""
+        stats_text = f"Pulls: {self.model.total_pulls} | 5★ Pity: {self.model.pity_counter}/50"
+        self.view.stats_label.config(text=stats_text)
+        self.view.stats_label.update_idletasks()  # Force UI refresh
+
+    def on_exit(self):
+        """Save on exit with validation"""
+        print(f"[DEBUG] Pre-Save State:", {
+            'crystals': self.model.crystal_balance,
+            'pulls': self.model.total_pulls,
+            'pity': self.model.pity_counter
+        })
+        self.model.save_game()
+        self.root.destroy() 
+
+    def _setup_bindings(self):
+        """Connect UI elements to controller methods"""
+        self.view.pull_btn.config(command=self.handle_pull)
+        self.view.inventory_btn.config(command=self.show_inventory)
+        self.view.screenshot_btn.config(command=self.take_screenshot)
+        
+        # Add ad watch button binding
+        if hasattr(self.view, 'ad_btn'):
+            self.view.ad_btn.config(command=self.watch_ad)
+
+        # Add minigame binding
+        self.view.minigame_btn.config(command=self.play_minigame)
+
+    def show_inventory(self):
+        """Display inventory contents"""
+        inventory_text = "\n".join([
+            f"{item}: {count}" 
+            for item, count in self.model.inventory.items()
+        ])
+        messagebox.showinfo("Inventory", inventory_text or "Empty")
+
+    def take_screenshot(self):
+        """Handle screenshot functionality"""
+        # Implementation would go here
+        self.view.show_message("Screenshot", "Feature coming soon!") 
+
+    def update_all_displays(self):
+        self.update_balance_display()
+        self.update_stats_display() 

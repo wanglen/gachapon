@@ -70,3 +70,4 @@ htmlcov/
 
 # Project Specific
 /sprite_cache/ 
+gachapon_save.json

@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.0] - 2025-01-04
+## [1.2.0] - 2025-02-03
 ### Added
 - Crystal currency system (100 per pull)
 - Daily login bonus (200 crystals/day)
@@ -23,7 +23,7 @@
 - Sound toggle persistence
 - Model-view synchronization issues
 
-## [1.1.0] - 2025-01-03
+## [1.1.0] - 2025-02-03
 ### Added
 - Graphical user interface using Tkinter
 - Sound effects for pulls and rare acquisitions
@@ -51,7 +51,7 @@
 - Inventory display sorting
 - Window resizing and positioning
 
-## [1.0.0] - 2025-01-03
+## [1.0.0] - 2025-02-03
 ### Initial Release
 - Basic console-based gachapon game
 - Three rarity tiers with probability system

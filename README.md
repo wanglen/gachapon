@@ -1,23 +1,39 @@
 # Gachapon Simulator
 
-A Python-based gachapon game with a graphical interface featuring collectible characters with different rarity tiers.
+A feature-rich Python gacha game with strategic resource management and collectible character progression system.
 
-![Game Screenshot](screenshot.png) *[Optional: Add screenshot later]*
+![Game Screenshot](screenshot.png)
 
 ## Features
 
-- 🎮 Graphical user interface (GUI) using Tkinter
-- 💎 Crystal currency system (100 per pull)
-- 🌟 Three rarity tiers (3★, 4★, 5★) with different probabilities
-- 🛡️ Pity system guaranteeing 5★ after 50 unsuccessful pulls
-- 📦 Inventory tracking system with tier-sorted display
-- 🎨 Custom generated sprites with tier-specific designs
-- 🔊 Sound feedback with toggle control
-- 📊 Real-time pull statistics and crystal balance
-- 🎯 Mini-game for earning extra crystals
-- 📺 Ad simulation system (300 crystals per view)
-- 🏆 Achievement system with crystal rewards
-- 📅 Daily login bonuses (200 crystals/day)
+**Core Gameplay**
+- 🎰 Gacha system with 3 rarity tiers (3★, 4★, 5★)
+- 🛡️ Pity counter guaranteeing 5★ after 50 pulls
+- 📦 Inventory management with tier-based sorting
+- 🎨 Procedurally generated character sprites
+
+**Economy Systems**
+- 💎 Crystal currency (100/pull) with multiple earning methods:
+  - Daily login bonuses (200/day)
+  - Achievement rewards (500-1000 crystals)
+  - Mini-game challenges (+50/play)
+  - Ad watching simulations (+300/view)
+- 📈 Real-time balance tracking
+- 💰 First pull protection system
+
+**Player Experience**
+- 🎮 Intuitive Tkinter GUI with multiple interactive panels
+- 🔊 Dynamic sound effects with toggle control
+- 📸 Built-in screenshot functionality
+- 🏆 Achievement milestone tracking
+- 📅 Daily reward system with streak protection
+
+**Technical Features**
+- 🧩 MVC architecture separation
+- 📊 Real-time pull statistics
+- 🖼️ Pillow-powered image generation
+- 🎚️ Configurable rates and balances
+- ⚙️ Cross-platform compatibility
 
 ## Requirements
 
@@ -30,8 +46,8 @@ A Python-based gachapon game with a graphical interface featuring collectible ch
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/gachapon-simulator.git
-cd gachapon-simulator
+git clone https://github.com/wanglen/gachapon.git
+cd gachapon
 ```
 
 2. Install dependencies:
@@ -65,6 +81,7 @@ python gachapon.py
 
 - Developed by Ghost
 - Built with Python's Tkinter GUI toolkit
+- AI-assisted development using [DeepSeek](https://www.deepseek.com) and [Cursor](https://www.cursor.com)
 - Uses Pillow (PIL Fork) for image processing
 - Emoji icons provided by Unicode Consortium
 

@@ -1,19 +1,27 @@
 import random
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from PIL import Image, ImageDraw, ImageTk, ImageColor
 from core.config import GameConfig
 
 class GachaponView(ttk.Frame):
     def __init__(self, master, controller=None):
         super().__init__(master)
-        self.controller = controller  # Store controller reference
+        self.controller = controller
         self.master = master
-        master.minsize(400, 300)  # Minimum window size
-        master.resizable(False, False)  # Disable resizing
+        master.minsize(400, 300)
+        master.resizable(False, False)
         self.style = ttk.Style()
         self.sprite_cache = {}
-        self.balance_label = None  # Add this line if not present
+        
+        # Initialize balance label first
+        self.balance_label = tk.Label(
+            self,
+            text="Crystals: 0",
+            font=("Arial", 12, "bold"),
+            fg="#2ecc71"
+        )
+        
         self._configure_styles()
         self._create_widgets()
         self.create_sprite_templates()
@@ -25,10 +33,22 @@ class GachaponView(ttk.Frame):
         self.style.configure('TButton', font=('Arial', 12))
         self.style.configure('Title.TLabel', font=('Arial', 16, 'bold'))
         self.style.configure('Result.Text', background='black', foreground='white')
+        self.style.configure('Ad.TButton', foreground='#27ae60')
+        self.style.configure('MiniGame.TButton', foreground='#e67e22')
 
     def _create_widgets(self):
         """Initialize UI components"""
         ttk.Label(self, text="Gachapon Simulator", style='Title.TLabel').pack(pady=10)
+        
+        # Add sound button initialization
+        self.sound_btn = tk.Button(
+            self,
+            text="🔊 Sound On",
+            font=("Arial", 10),
+            relief="flat"
+        )
+        self.sound_btn.pack(side=tk.BOTTOM, pady=5)
+        
         self.pull_btn = ttk.Button(self, text="Pull (100 crystals)")
         self.pull_btn.pack(pady=5)
         self.result_text = tk.Text(self, height=4, width=40, font=('Arial', 14))
@@ -37,6 +57,22 @@ class GachaponView(ttk.Frame):
         self.inventory_btn.pack(pady=5)
         self.stats_label = ttk.Label(self, text="Pulls: 0 | 5★ Pity: 0/50")
         self.stats_label.pack(pady=5)
+        
+        # Updated ad button with icon
+        self.ad_btn = ttk.Button(
+            self, 
+            text="📺 Watch Ad (+300 crystals)",  # Added TV emoji
+            style='Ad.TButton'
+        )
+        self.ad_btn.pack(pady=5)
+        
+        # Updated minigame button with icon
+        self.minigame_btn = ttk.Button(
+            self,
+            text="🎮 Play Minigame",  # Added gamepad emoji
+            style='MiniGame.TButton' 
+        )
+        self.minigame_btn.pack(pady=5)
         
         for tier in GameConfig.RARITY_RATES:
             self.result_text.tag_configure(f"{tier}star", foreground=GameConfig.COLORS[tier][0])
@@ -92,27 +128,37 @@ class GachaponView(ttk.Frame):
         self.screenshot_btn.pack(pady=5)
 
     def setup_ui(self):
-        # Add sound toggle button
-        self.sound_btn = tk.Button(
-            self.master, 
-            text="🔊 Sound On",
-            font=("Arial", 10),
-            relief="flat"
+        # Properly pack the main frame
+        self.pack(fill=tk.BOTH, expand=True)
+        
+        # Reposition balance label to top-right
+        self.balance_label.pack_forget()  # Remove old positioning
+        self.balance_label.pack(
+            side=tk.TOP, 
+            anchor='e',  # East alignment
+            padx=10,
+            pady=5,
+            fill=tk.X
         )
+        
+        # Keep sound button at bottom
         self.sound_btn.pack(side=tk.BOTTOM, pady=5)
-
-        # Add/update balance display
-        self.balance_label = tk.Label(
-            self.master, 
-            text="Crystals: 1000",
-            font=("Arial", 12, "bold"),
-            fg="#2ecc71"
-        )
-        self.balance_label.pack(side=tk.TOP, pady=5)
-
-        # ... rest of existing UI code ... 
+        
+        # Ensure proper button order
+        self.pull_btn.pack(pady=5)
+        self.ad_btn.pack(pady=5)
+        self.minigame_btn.pack(pady=5)
+        self.inventory_btn.pack(pady=5)
+        self.screenshot_btn.pack(pady=5)
+        
+        # Force UI refresh
+        self.update_idletasks()
 
     def update_balance_display(self):
         """Update crystal balance display"""
         balance = self.controller.model.crystal_balance
-        self.balance_label.config(text=f"Crystals: {balance}") 
+        self.balance_label.config(text=f"Crystals: {balance}")
+
+    def show_message(self, title, message):
+        """Display a message dialog"""
+        messagebox.showinfo(title, message) 
